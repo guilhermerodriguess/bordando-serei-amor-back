@@ -60,6 +60,7 @@ export class ProductsController {
     }
   }
 
+  @Public()
   @Get(':id')
   async findOne(@Param('id') id: string) {
     try {
