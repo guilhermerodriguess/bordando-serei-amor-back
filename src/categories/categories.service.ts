@@ -4,6 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
+import S3Storage from 'utils/S3Storage';
 
 @Injectable()
 export class CategoriesService {
@@ -22,6 +23,11 @@ export class CategoriesService {
       home: Boolean(createCategoryDto.home),
       status: Boolean(createCategoryDto.status),
     };
+
+    const s3Storage = new S3Storage();
+    if (files) {
+      await s3Storage.saveFile(files[0].filename);
+    }
 
     const category = await this.categoryRepository.save(newCategory);
     if (!category) {
@@ -69,8 +75,19 @@ export class CategoriesService {
   }
 
   async remove(id: string) {
-    const category = await this.categoryRepository.delete(id);
-    if (!category.affected) {
+    const s3Storage = new S3Storage();
+
+    const category = await this.categoryRepository.findOne({ where: { id } });
+    if (!category) {
+      throw new Error('Categoria não encontrada');
+    }
+    if (category.image) {
+      await s3Storage.deleteFile(category.image);
+    }
+
+    const removedCategory = await this.categoryRepository.delete(id);
+
+    if (!removedCategory.affected) {
       throw new Error('Erro ao deletar categoria');
     }
   }

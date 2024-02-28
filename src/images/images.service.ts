@@ -34,10 +34,19 @@ export class ImagesService {
   }
 
   async remove(id: string) {
+    const s3Storage = new S3Storage();
+
+    const image = await this.imageRepository.findOne({ where: { id } });
+    if (!image) {
+      throw new Error('Imagem não encontrada');
+    }
+    await s3Storage.deleteFile(image.name);
+
     const removedImage = await this.imageRepository.delete(id);
     if (!removedImage.affected) {
       throw new Error('Erro ao remover imagem');
     }
+
     return removedImage;
   }
 }
