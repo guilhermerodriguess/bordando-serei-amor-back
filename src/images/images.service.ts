@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Image } from './entities/images.entity';
 import { UploadImageDto } from './dto/upload-image.dto';
-import S3Storage from 'utils/S3Storage';
+import S3Storage from 'src/utils/S3Storage';
 
 @Injectable()
 export class ImagesService {

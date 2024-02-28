@@ -3,7 +3,7 @@ import { Slide } from './entities/slide.entity';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import S3Storage from 'utils/S3Storage';
+import S3Storage from 'src/utils/S3Storage';
 
 @Injectable()
 export class SlidesService {

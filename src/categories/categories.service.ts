@@ -4,7 +4,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
-import S3Storage from 'utils/S3Storage';
+import S3Storage from 'src/utils/S3Storage';
 
 @Injectable()
 export class CategoriesService {

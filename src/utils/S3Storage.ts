@@ -1,7 +1,7 @@
 import { S3 } from 'aws-sdk';
-import path = require('path');
-import mime = require('mime-types');
-import fs = require('fs');
+import { resolve } from 'path';
+import { lookup } from 'mime-types';
+import { promises } from 'fs';
 
 class S3Storage {
   private client: S3;
@@ -13,15 +13,15 @@ class S3Storage {
   }
 
   async saveFile(filename: string): Promise<void> {
-    const originalPath = path.resolve('.', 'upload', filename);
+    const originalPath = resolve('.', 'upload', filename);
 
-    const contentType = mime.lookup(originalPath);
+    const contentType = lookup(originalPath);
 
     if (!contentType) {
       throw new Error('File not found');
     }
 
-    const fileContent = await fs.promises.readFile(originalPath);
+    const fileContent = await promises.readFile(originalPath);
 
     await this.client
       .putObject({
@@ -33,7 +33,7 @@ class S3Storage {
       })
       .promise();
 
-    await fs.promises.unlink(originalPath);
+    await promises.unlink(originalPath);
   }
 
   async deleteFile(filename: string): Promise<void> {
