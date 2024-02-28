@@ -12,8 +12,6 @@ import { UsersModule } from './users/users.module';
 import { ImagesModule } from './images/images.module';
 import { CategoriesModule } from './categories/categories.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { SlidesModule } from './slides/slides.module';
 import { CardsModule } from './cards/cards.module';
 
@@ -50,6 +48,4 @@ const ENV = process.env.NODE_ENV;
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
 })
-export class AppModule {
-  constructor(private dataSource: DataSource) {}
-}
+export class AppModule {}

@@ -10,6 +10,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.email, signInDto.password);
+    try {
+      return this.authService.signIn(signInDto.email, signInDto.password);
+    } catch (error) {
+      return error;
+    }
   }
 }

@@ -45,7 +45,6 @@ export class SlidesService {
     if (!slide) {
       throw new Error('Imagem não encontrada');
     }
-
     const s3Storage = new S3Storage();
     await s3Storage.deleteFile(slide.name);
 

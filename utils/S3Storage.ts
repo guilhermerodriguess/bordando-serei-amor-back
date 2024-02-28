@@ -37,12 +37,16 @@ class S3Storage {
   }
 
   async deleteFile(filename: string): Promise<void> {
-    await this.client
-      .deleteObject({
-        Bucket: process.env.AWS_BUCKET_NAME,
-        Key: filename,
-      })
-      .promise();
+    try {
+      await this.client
+        .deleteObject({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: filename,
+        })
+        .promise();
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
 
