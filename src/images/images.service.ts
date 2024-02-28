@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Image } from './entities/images.entity';
 import { UploadImageDto } from './dto/upload-image.dto';
+import S3Storage from 'utils/S3Storage';
 
 @Injectable()
 export class ImagesService {
@@ -15,9 +16,12 @@ export class ImagesService {
     const images: Image[] = [];
 
     for (const file of files) {
+      const s3Storage = new S3Storage();
       const image = new UploadImageDto();
       image.name = file.filename;
       image.product = product_id;
+
+      await s3Storage.saveFile(file.filename);
 
       const savedImage = await this.imageRepository.save(image);
       if (!savedImage) {

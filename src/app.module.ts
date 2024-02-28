@@ -39,10 +39,6 @@ const ENV = process.env.NODE_ENV;
     MulterModule.register({
       dest: './upload',
     }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'upload'),
-      serveRoot: '/upload',
-    }),
     ProductsModule,
     AuthModule,
     UsersModule,

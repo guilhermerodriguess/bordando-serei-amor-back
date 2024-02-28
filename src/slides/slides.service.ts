@@ -3,6 +3,7 @@ import { Slide } from './entities/slide.entity';
 import { CreateSlideDto } from './dto/create-slide.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import S3Storage from 'utils/S3Storage';
 
 @Injectable()
 export class SlidesService {
@@ -14,8 +15,11 @@ export class SlidesService {
     const images: Slide[] = [];
 
     for (const file of files) {
+      const s3Storage = new S3Storage();
       const image = new CreateSlideDto();
       image.name = file.filename;
+
+      await s3Storage.saveFile(file.filename);
 
       const savedImage = await this.slideRepository.save(image);
       if (!savedImage) {
@@ -41,6 +45,9 @@ export class SlidesService {
     if (!slide) {
       throw new Error('Imagem não encontrada');
     }
+
+    const s3Storage = new S3Storage();
+    await s3Storage.deleteFile(slide.name);
 
     const deleted = await this.slideRepository.delete(id);
 
