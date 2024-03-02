@@ -14,6 +14,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { SlidesModule } from './slides/slides.module';
 import { CardsModule } from './cards/cards.module';
+import { PackagesModule } from './packages/packages.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -44,6 +45,7 @@ const ENV = process.env.NODE_ENV;
     CategoriesModule,
     SlidesModule,
     CardsModule,
+    PackagesModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

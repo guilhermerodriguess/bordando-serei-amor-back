@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsBoolean, IsString } from 'class-validator';
 import { Category } from 'src/categories/entities/category.entity';
+import { Package } from 'src/packages/entities/package.entity';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -7,7 +8,7 @@ export class CreateProductDto {
   name: string;
 
   @IsNotEmpty()
-  price: string;
+  price: number;
 
   @IsNotEmpty()
   @IsString()
@@ -15,6 +16,9 @@ export class CreateProductDto {
 
   @IsNotEmpty()
   category: Category;
+
+  @IsNotEmpty()
+  package: Package;
 
   @IsNotEmpty()
   stock: number;
