@@ -14,6 +14,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Public } from 'src/auth/auth.decorator';
+import { HttpService } from '@nestjs/axios';
 
 export interface IQuery {
   limit: number;
@@ -26,7 +27,10 @@ export interface IQuery {
 
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly httpService: HttpService,
+  ) {}
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto) {
@@ -100,6 +104,41 @@ export class ProductsController {
       return {
         message: 'Produto removido com sucesso!',
       };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+    }
+  }
+
+  @Public()
+  @Post('calc-delivery')
+  async calcDelivery(@Body() body: any) {
+    try {
+      const meAPIURL = process.env.ME_API_URL;
+      const meTOKEN = process.env.ME_TOKEN;
+
+      const response = await this.httpService
+        .post(
+          `${meAPIURL}/calc-delivery`,
+          { ...body },
+          {
+            headers: {
+              Authorization: `Bearer ${meTOKEN}`,
+            },
+          },
+        )
+        .toPromise();
+
+      const services = [1, 2, 3, 4, 33];
+
+      const filteredResponse = response.data.filter(
+        (item) => !item.error && services.includes(item.id),
+      );
+
+      return filteredResponse;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
