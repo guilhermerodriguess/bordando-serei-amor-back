@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ProductsModule } from './products/products.module';
-import { DataSource } from 'typeorm';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
@@ -15,6 +14,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { SlidesModule } from './slides/slides.module';
 import { CardsModule } from './cards/cards.module';
 import { PackagesModule } from './packages/packages.module';
+import { PagbankModule } from './pagbank/pagbank.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -46,6 +46,7 @@ const ENV = process.env.NODE_ENV;
     SlidesModule,
     CardsModule,
     PackagesModule,
+    PagbankModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],
