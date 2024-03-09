@@ -1,33 +1,30 @@
 import {
   Controller,
   Get,
-  Post,
-  Body,
   Patch,
   Param,
   Delete,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { PagbankService } from './pagbank.service';
-import { CreatePagbankDto } from './dto/create-pagbank.dto';
-import { UpdatePagbankDto } from './dto/update-pagbank.dto';
 import { Public } from 'src/auth/auth.decorator';
 
 @Controller('pagbank')
 export class PagbankController {
   constructor(private readonly pagbankService: PagbankService) {}
 
-  @Post()
-  create(@Body() createPagbankDto: CreatePagbankDto) {
-    return this.pagbankService.create(createPagbankDto);
-  }
-
   @Public()
-  @Get('public-key')
-  publicKey() {
+  @Get('session')
+  async create() {
     try {
-      return this.pagbankService.publicKey();
+      return await this.pagbankService.createSession();
     } catch (error) {
-      throw error;
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
     }
   }
 
@@ -37,8 +34,8 @@ export class PagbankController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePagbankDto: UpdatePagbankDto) {
-    return this.pagbankService.update(+id, updatePagbankDto);
+  update(@Param('id') id: string) {
+    return this.pagbankService.update(+id);
   }
 
   @Delete(':id')

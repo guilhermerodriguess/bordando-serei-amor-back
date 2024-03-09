@@ -1,30 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePagbankDto } from './dto/create-pagbank.dto';
-import { UpdatePagbankDto } from './dto/update-pagbank.dto';
 
 @Injectable()
 export class PagbankService {
-  create(createPagbankDto: CreatePagbankDto) {
-    return 'This action adds a new pagbank';
-  }
+  async createSession() {
+    const PB_API_URL = process.env.PB_API_URL;
+    const PB_EMAIL = process.env.PB_EMAIL;
+    const PB_ACCESS_TOKEN = process.env.PB_ACCESS_TOKEN;
 
-  publicKey() {
-    const created_at = Date.now();
-    const public_key = `MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwKZGNMvOX4c30QniQVly3ZQ/NDPWR7XzmDP5Icc2EP4yOgBZ3MaUHxcegR/1mPPkbFVRzYkGaA/tMddZNXsUUJwNYoOGiTPLBzt770+/Du6fea0yDB+n2WONPv13qM2gHOcEnHcP2Mfqj2RYa3Go/Cr2qDh0On1otLXV6vNB+NbPrOWz1uXetCiaUhNk70Hix29li28dwOYwmBDp6P132TBYn0RIaY4hmjVeX03kYBMafZNTcPIBalTjOQn9/ULw6IE2vfurJzWQaPfo6WaktYw/hiuyh72FU+lEJdwQMCbQAOsScnDGU5KEKgOEfddbWrv7KCORwf02yydwkdkF8wIDAQAB`;
+    const response = await fetch(
+      `${PB_API_URL}/sessions?email=${PB_EMAIL}&token=${PB_ACCESS_TOKEN}`,
+      {
+        method: 'POST',
+        headers: {
+          'content-length': '0',
+        },
+      },
+    );
 
-    const response = {
-      public_key,
-      created_at,
-    };
+    if (!response.ok) {
+      throw new Error(`Erro ao chamar API PagBank: ${response.statusText}`);
+    }
 
-    return response;
+    const xmlString = await response.text();
+    const startTag = '<id>';
+    const endTag = '</id>';
+    const startIndex = xmlString.indexOf(startTag) + startTag.length;
+    const endIndex = xmlString.indexOf(endTag);
+
+    // Extraia o valor entre as tags <id>
+    const sessionId = xmlString.slice(startIndex, endIndex).toString();
+
+    return sessionId;
   }
 
   findOne(id: number) {
     return `This action returns a #${id} pagbank`;
   }
 
-  update(id: number, updatePagbankDto: UpdatePagbankDto) {
+  update(id: number) {
     return `This action updates a #${id} pagbank`;
   }
 
