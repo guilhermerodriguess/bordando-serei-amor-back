@@ -10,6 +10,7 @@ import {
 import { PagbankService } from './pagbank.service';
 import { Public } from 'src/auth/auth.decorator';
 import { CheckoutDto } from './dto/checkout.body';
+import { NotificationBodyDto } from './dto/notification.body';
 
 @Controller('pagbank')
 export class PagbankController {
@@ -46,7 +47,7 @@ export class PagbankController {
   @Public()
   @Post('notification')
   @HttpCode(200)
-  async notification(@Body() body: any) {
+  async notification(@Body() body: NotificationBodyDto) {
     try {
       return await this.pagbankService.notification(body);
     } catch (error) {

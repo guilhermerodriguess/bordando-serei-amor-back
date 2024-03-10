@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CheckoutDto } from './dto/checkout.body';
 import { parseString } from 'xml2js';
+import { NotificationBodyDto } from './dto/notification.body';
 
 @Injectable()
 export class PagbankService {
@@ -152,7 +153,21 @@ export class PagbankService {
     return result;
   };
 
-  async notification(body: any) {
-    console.log('notification', body);
+  async notification(body: NotificationBodyDto) {
+    const PB_API_URL = process.env.PB_API_URL;
+    const PB_EMAIL = process.env.PB_EMAIL;
+    const PB_ACCESS_TOKEN = process.env.PB_ACCESS_TOKEN;
+
+    const response = await fetch(
+      `${PB_API_URL}/transactions/notifications/${body.notificationCode}?email=${PB_EMAIL}&token=${PB_ACCESS_TOKEN}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    const xmlString = await response.text();
+    const responseObject = this.parsePagBankResponse(xmlString);
+    console.log(responseObject);
+    return responseObject;
   }
 }
