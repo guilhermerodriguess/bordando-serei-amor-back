@@ -110,6 +110,7 @@ export class PagbankService {
       billingAddressPostalCode: '72015-961',
       billingAddressComplement: 'AP 611',
       shippingAddressRequired: 'false',
+      notificationURL: `${process.env.API_URL}/pagbank/notification`,
     });
 
     console.log('body', bodyReq);
