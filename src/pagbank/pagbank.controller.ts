@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Body,
+  HttpCode,
 } from '@nestjs/common';
 import { PagbankService } from './pagbank.service';
 import { Public } from 'src/auth/auth.decorator';
@@ -44,6 +45,7 @@ export class PagbankController {
 
   @Public()
   @Post('notification')
+  @HttpCode(200)
   async notification(@Body() body: any) {
     try {
       return await this.pagbankService.notification(body);
