@@ -22,6 +22,7 @@ export class PagbankController {
     try {
       return await this.pagbankService.createSession();
     } catch (error) {
+      console.log('Error Session:', error);
       if (error instanceof HttpException) {
         throw error;
       } else {

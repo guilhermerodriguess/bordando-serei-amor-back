@@ -15,6 +15,7 @@ import { SlidesModule } from './slides/slides.module';
 import { CardsModule } from './cards/cards.module';
 import { PackagesModule } from './packages/packages.module';
 import { PagbankModule } from './pagbank/pagbank.module';
+import { OrdersModule } from './orders/orders.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -47,6 +48,7 @@ const ENV = process.env.NODE_ENV;
     CardsModule,
     PackagesModule,
     PagbankModule,
+    OrdersModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

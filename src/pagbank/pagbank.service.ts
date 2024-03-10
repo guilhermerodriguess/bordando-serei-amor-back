@@ -41,8 +41,6 @@ export class PagbankService {
     const PB_EMAIL = process.env.PB_EMAIL;
     const PB_ACCESS_TOKEN = process.env.PB_ACCESS_TOKEN;
 
-    console.log('body', body);
-
     const cleanPhone = (phone: string) => {
       const clean = phone.replace(/\D/g, '');
       const areaCode = clean.slice(0, 2);
@@ -61,8 +59,6 @@ export class PagbankService {
           return 'creditCard';
         case 'BOLETO':
           return 'boleto';
-        case ' ONLINE_DEBIT':
-          return 'onlineDebit';
         default:
           throw new Error('Método de pagamento inválido');
       }
@@ -82,9 +78,30 @@ export class PagbankService {
       return acc;
     }, {});
 
+    if (!body.senderHash) {
+      throw new Error('Hash do comprador é obrigatório');
+    }
+
+    const bodyCreditCard =
+      body.method === 'CREDIT_CARD'
+        ? {
+            creditCardToken: body.creditCardToken,
+            installmentQuantity: String(body.installment?.quantity),
+            installmentValue: String(
+              body.installment?.installmentAmount.toFixed(2),
+            ),
+            noInterestInstallmentQuantity: '2',
+            creditCardHolderName: body.holder?.name,
+            creditCardHolderCPF: cleanDocument(body.holder.document),
+            creditCardHolderBirthDate: body.holder.birthDate,
+            creditCardHolderAreaCode: cleanPhone(body.holder.phone).areaCode,
+            creditCardHolderPhone: cleanPhone(body.holder.phone).number,
+          }
+        : {};
+
     const bodyReq = new URLSearchParams({
       mode: 'default',
-      method: transformMethod(body.method),
+      paymentMethod: transformMethod(body.method),
       currency: 'BRL',
       senderHash: body.senderHash,
       senderName: body.name,
@@ -92,16 +109,8 @@ export class PagbankService {
       senderAreaCode: cleanPhone(body.phone).areaCode,
       senderPhone: cleanPhone(body.phone).number,
       senderCPF: cleanDocument(body.document),
+      ...bodyCreditCard,
       ...itemsProperties,
-      creditCardToken: body.creditCardToken,
-      installmentQuantity: String(body.installment.quantity),
-      installmentValue: String(body.installment.installmentAmount.toFixed(2)),
-      noInterestInstallmentQuantity: '2',
-      creditCardHolderName: body.holder.name,
-      creditCardHolderCPF: cleanDocument(body.holder.document),
-      creditCardHolderBirthDate: body.holder.birthDate,
-      creditCardHolderAreaCode: cleanPhone(body.holder.phone).areaCode,
-      creditCardHolderPhone: cleanPhone(body.holder.phone).number,
       billingAddressStreet: 'CSB 9 LOTE 3',
       billingAddressNumber: '3',
       billingAddressDistrict: 'Taguatinga Sul',
@@ -114,7 +123,7 @@ export class PagbankService {
       notificationURL: `${process.env.API_URL}/pagbank/notification`,
     });
 
-    console.log('body', bodyReq);
+    console.log('bodyReq', bodyReq);
 
     const response = await fetch(
       `${PB_API_URL}/transactions?email=${PB_EMAIL}&token=${PB_ACCESS_TOKEN}`,
@@ -127,10 +136,18 @@ export class PagbankService {
         body: bodyReq,
       },
     );
+
+    if (!response) {
+      throw new Error(`Erro ao chamar API PagBank: ${response}`);
+    }
     const responseText = await response.text();
-    console.log(responseText);
     const responseObject = this.parsePagBankResponse(responseText);
-    console.log(responseObject);
+    console.log('responseObject', responseObject);
+    if (responseObject.error) {
+      throw new Error(
+        `Erro ao chamar API PagBank: ${responseObject.error[0].message}`,
+      );
+    }
     return responseObject;
   }
 
@@ -143,7 +160,7 @@ export class PagbankService {
       (err, data) => {
         if (err) {
           // Tratar erro aqui, se necessário
-          console.error(err);
+          console.error('err', err);
           return;
         }
         result = data.transaction || data.errors;
