@@ -1,14 +1,14 @@
 import {
   Controller,
   Get,
-  Patch,
-  Param,
-  Delete,
+  Post,
   HttpException,
   HttpStatus,
+  Body,
 } from '@nestjs/common';
 import { PagbankService } from './pagbank.service';
 import { Public } from 'src/auth/auth.decorator';
+import { CheckoutDto } from './dto/checkout.body';
 
 @Controller('pagbank')
 export class PagbankController {
@@ -28,18 +28,31 @@ export class PagbankController {
     }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pagbankService.findOne(+id);
+  @Public()
+  @Post('checkout')
+  async checkout(@Body() body: CheckoutDto) {
+    try {
+      return await this.pagbankService.checkout(body);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+    }
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.pagbankService.update(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pagbankService.remove(+id);
+  @Public()
+  @Post('notification')
+  async notification(@Body() body: any) {
+    try {
+      return await this.pagbankService.notification(body);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+    }
   }
 }
