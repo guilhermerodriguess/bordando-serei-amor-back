@@ -2,9 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CheckoutDto } from './dto/checkout.body';
 import { parseString } from 'xml2js';
 import { NotificationBodyDto } from './dto/notification.body';
+import { OrdersService } from 'src/orders/orders.service';
 
 @Injectable()
 export class PagbankService {
+  constructor(private readonly ordersService: OrdersService) {}
   async createSession() {
     const PB_API_URL = process.env.PB_API_URL;
     const PB_EMAIL = process.env.PB_EMAIL;
@@ -123,8 +125,6 @@ export class PagbankService {
       notificationURL: `${process.env.API_URL}/pagbank/notification`,
     });
 
-    console.log('bodyReq', bodyReq);
-
     const response = await fetch(
       `${PB_API_URL}/transactions?email=${PB_EMAIL}&token=${PB_ACCESS_TOKEN}`,
       {
@@ -142,13 +142,15 @@ export class PagbankService {
     }
     const responseText = await response.text();
     const responseObject = this.parsePagBankResponse(responseText);
-    console.log('responseObject', responseObject);
     if (responseObject.error) {
       throw new Error(
         `Erro ao chamar API PagBank: ${responseObject.error[0].message}`,
       );
     }
-    return responseObject;
+
+    const order = await this.ordersService.create(responseObject);
+
+    return order;
   }
 
   private parsePagBankResponse = (xmlString) => {
@@ -184,7 +186,20 @@ export class PagbankService {
 
     const xmlString = await response.text();
     const responseObject = this.parsePagBankResponse(xmlString);
-    console.log(responseObject);
-    return responseObject;
+
+    if (responseObject.error) {
+      throw new Error(
+        `Erro ao chamar API PagBank: ${responseObject.error[0].message}`,
+      );
+    }
+
+    const updateStatusOrder =
+      await this.ordersService.updateStatus(responseObject);
+
+    if (!updateStatusOrder) {
+      throw new Error('Erro ao atualizar status do pedido');
+    }
+
+    return updateStatusOrder;
   }
 }

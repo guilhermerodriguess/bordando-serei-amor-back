@@ -16,6 +16,7 @@ import { CardsModule } from './cards/cards.module';
 import { PackagesModule } from './packages/packages.module';
 import { PagbankModule } from './pagbank/pagbank.module';
 import { OrdersModule } from './orders/orders.module';
+import { OrderProductModule } from './orderProduct/orderProduct.module';
 
 const ENV = process.env.NODE_ENV;
 
@@ -49,6 +50,7 @@ const ENV = process.env.NODE_ENV;
     PackagesModule,
     PagbankModule,
     OrdersModule,
+    OrderProductModule,
   ],
   controllers: [AppController, AuthController],
   providers: [AppService, AuthService],

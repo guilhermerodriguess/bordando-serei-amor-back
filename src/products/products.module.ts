@@ -11,5 +11,6 @@ import { HttpModule } from '@nestjs/axios';
   imports: [TypeOrmModule.forFeature([Product, Image]), HttpModule],
   controllers: [ProductsController],
   providers: [ProductsService, ImagesService],
+  exports: [ProductsService],
 })
 export class ProductsModule {}

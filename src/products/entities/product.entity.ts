@@ -2,6 +2,7 @@ import {
   BeforeInsert,
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   ManyToOne,
   OneToMany,
@@ -41,6 +42,9 @@ export class Product {
 
   @UpdateDateColumn()
   updatedDate: Date;
+
+  @DeleteDateColumn()
+  deletedDate: Date;
 
   @OneToMany(() => Image, (image) => image.product)
   images: Image[];
